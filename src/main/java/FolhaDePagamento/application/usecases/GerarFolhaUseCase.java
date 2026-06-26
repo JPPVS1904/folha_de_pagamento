@@ -4,20 +4,40 @@ import FolhaDePagamento.domain.entities.Funcionario;
 import FolhaDePagamento.domain.entities.ItemFolha;
 import FolhaDePagamento.domain.entities.ResultadoFolha;
 import FolhaDePagamento.domain.calculators.Impostos.CalcularImposto;
+import FolhaDePagamento.domain.calculators.Impostos.ImpostoFactory;
 import FolhaDePagamento.domain.calculators.Proventos.*;
 import FolhaDePagamento.domain.calculators.Descontos.*;
+import FolhaDePagamento.repositories.FuncionarioRepository;
+import FolhaDePagamento.repositories.ResultadoFolhaRepository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Service
 public class GerarFolhaUseCase {
 
-    public static ResultadoFolha executar(
-            Funcionario f,
+    private final FuncionarioRepository funcionarioRepository;
+    private final ResultadoFolhaRepository resultadoFolhaRepository;
+
+    public GerarFolhaUseCase(FuncionarioRepository funcionarioRepository, ResultadoFolhaRepository resultadoFolhaRepository) {
+        this.funcionarioRepository = funcionarioRepository;
+        this.resultadoFolhaRepository = resultadoFolhaRepository;
+    }
+
+    @Transactional
+    public ResultadoFolha executar(
+            Long funcionarioId,
             int mesFolha,
             int anoFolha,
-            boolean feriasNoMes,
-            CalcularImposto imposto) {
+            boolean feriasNoMes) {
+
+        Funcionario f = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Funcionário não encontrado"));
+
+        CalcularImposto imposto = ImpostoFactory.criar(anoFolha);
 
         ResultadoFolha r = new ResultadoFolha();
         r.nome = f.getNome();
@@ -69,6 +89,6 @@ public class GerarFolhaUseCase {
             }
         }
 
-        return r;
+        return resultadoFolhaRepository.save(r);
     }
 }
