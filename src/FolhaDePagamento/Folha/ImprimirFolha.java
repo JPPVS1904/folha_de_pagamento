@@ -45,27 +45,27 @@ public class ImprimirFolha {
         System.out.printf("===== FOLHA DE PAGAMENTO ====="
                 +"\n%s de %d"
                 +"\nFuncionário: %s"
-                +"\nCargo: %s", mesFolha(r.mesFolha), r.anoFolha, r.nome, r.cargo);
+                +"\nCargo: %s\n", mesFolha(r.mesFolha), r.anoFolha, r.nome, r.cargo);
 
         System.out.println("\n--- PROVENTOS ---");
-        linha("Salário Base", r.salarioBase);
+        for (ItemFolha p : r.proventos) {
+            linha(p.getDescricao(), p.getValor());
+        }
 
-        if (r.horasExtras > 0)
-            linha("Horas Extras", r.horasExtras);
+        System.out.println("\n--- DESCONTOS ---");
+        for (ItemFolha d : r.descontos) {
+            linha(d.getDescricao(), d.getValor());
+        }
 
-        if (r.decimoTerceiro > 0)
-            linha("13º Salário", r.decimoTerceiro);
-
-        if (r.ferias > 0)
-            linha("Férias + 1/3", r.ferias);
-
-        System.out.println("\n--- IMPOSTOS ---");
-        linha("INSS", r.inss);
-        linha("IRRF", r.irrf);
-        linha("FGTS (informativo)", r.fgts);
+        if (!r.informativos.isEmpty()) {
+            System.out.println("\n--- INFORMATIVOS ---");
+            for (ItemFolha i : r.informativos) {
+                linha(i.getDescricao(), i.getValor());
+            }
+        }
 
         System.out.println("\n--- TOTAIS ---");
-        linha("TOTAL BRUTO", r.bruto);
-        linha("TOTAL LÍQUIDO", r.liquido);
+        linha("TOTAL BRUTO", r.getTotalProventos());
+        linha("TOTAL LÍQUIDO", r.getLiquido());
     }
 }

@@ -1,6 +1,7 @@
 package FolhaDePagamento.Folha;
 
-import FolhaDePagamento.Impostos.CalcularImposto;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResultadoFolha {
 
@@ -9,16 +10,19 @@ public class ResultadoFolha {
     public int mesFolha;
     public int anoFolha;
 
-    public double salarioBase;
-    public double horasExtras;
-    public double decimoTerceiro;
-    public double ferias;
+    public List<ItemFolha> proventos = new ArrayList<>();
+    public List<ItemFolha> descontos = new ArrayList<>();
+    public List<ItemFolha> informativos = new ArrayList<>();
 
+    public double getTotalProventos() {
+        return proventos.stream().mapToDouble(ItemFolha::getValor).sum();
+    }
 
-    public double inss;
-    public double irrf;
-    public double fgts;
+    public double getTotalDescontos() {
+        return descontos.stream().mapToDouble(ItemFolha::getValor).sum();
+    }
 
-    public double bruto;
-    public double liquido;
-}
+    public double getLiquido() {
+        return getTotalProventos() - getTotalDescontos();
+    }
+}
